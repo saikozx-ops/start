@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Nouvel onglet</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@200;300;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#000;--fg:#fff;--dim:#8c8c8c;--line:#2a2a2a}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:radial-gradient(circle at 50% 18%,#1b1b1b 0,#000 55%) no-repeat,#000;color:var(--fg);font:400 .95rem/1.5 'IBM Plex Mono',ui-monospace,Consolas,monospace;min-height:100vh}
+main{max-width:1000px;margin:0 auto;padding:1.6rem 1.2rem 1.6rem}
+.hero{position:relative;width:min(88vw,400px);aspect-ratio:1;margin:0 auto 1rem}
+.hero svg{position:absolute;inset:0;width:100%;height:100%}
+.halo{transform-origin:200px 200px;animation:spin 90s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+#ticks line{stroke:#fff;stroke-width:1.5;opacity:.18}
+#ticks line.on{opacity:1}
+.face{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+#time{font:200 clamp(3rem,15vw,5.2rem)/1 'Unbounded',system-ui,sans-serif;letter-spacing:-.02em}
+#sec{font:300 1rem 'Unbounded',system-ui,sans-serif;color:var(--dim);margin-top:.6rem}
+#greet{color:var(--dim);margin-top:.9rem}
+#date{text-align:center;margin:0 0 1.8rem}
+form{display:flex;border:1px solid var(--fg);margin:0 auto 1.8rem;max-width:640px}
+form:focus-within{box-shadow:0 0 0 3px #fff3,0 0 24px #fff3}
+form input{flex:1;min-width:0;background:transparent;border:0;color:var(--fg);font:inherit;font-size:1.05rem;padding:.9rem 1rem;outline:none}
+form input::placeholder{color:var(--dim)}
+form button{background:var(--fg);color:var(--bg);border:0;font:500 .95rem 'IBM Plex Mono',monospace;padding:0 1.4rem;cursor:pointer}
+form button:focus-visible{outline:2px solid var(--fg);outline-offset:-5px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line)}
+.cell{background:var(--bg);padding:1.1rem 1.2rem}
+.cell.wide{grid-column:span 2}
+@media(max-width:760px){.grid{grid-template-columns:1fr}.cell.wide{grid-column:auto}}
+.lab{color:var(--dim);font-size:.8rem;margin-bottom:.7rem}
+.big{font:200 3.4rem/1 'Unbounded',system-ui,sans-serif}
+.row{display:flex;justify-content:space-between;gap:1rem;padding:.18rem 0;border-bottom:1px dotted var(--line)}
+.row span:first-child{color:var(--dim)}
+.hours{display:flex;gap:.4rem;align-items:flex-end;margin-top:1.1rem}
+.h{flex:1;text-align:center;font-size:.78rem;color:var(--dim)}
+.h i{display:block;background:var(--fg);margin:.3rem auto;width:60%;min-width:6px}
+.h b{display:block;color:var(--fg);font-weight:500}
+.bar{height:3px;background:var(--line);margin:.3rem 0 .7rem}
+.bar i{display:block;height:100%;background:var(--fg)}
+.links{display:flex;flex-wrap:wrap;gap:1px;background:var(--line);border:1px solid var(--line);margin-top:1.8rem}
+.links a{flex:1 1 140px;background:var(--bg);color:var(--fg);text-decoration:none;text-align:center;padding:.9rem .6rem;transition:background .15s,color .15s}
+.links a:hover{background:var(--fg);color:var(--bg)}
+.links a:focus-visible{outline:2px solid var(--fg);outline-offset:-4px}
+@media(prefers-reduced-motion:reduce){.halo{animation:none}}
+</style>
+</head>
+<body>
+<main>
+  <div class="hero">
+    <svg viewBox="0 0 400 400" aria-hidden="true">
+      <g class="halo" fill="none" stroke="#fff">
+        <circle cx="200" cy="200" r="150" stroke-opacity=".35" stroke-dasharray="2 9"/>
+        <circle cx="200" cy="200" r="132" stroke-opacity=".15"/>
+        <circle cx="200" cy="200" r="112" stroke-opacity=".12"/>
+        <circle cx="200" cy="200" r="96" stroke-opacity=".08"/>
+      </g>
+      <g id="ticks"></g>
+    </svg>
+    <div class="face"><div id="time">--:--</div><div id="sec">00</div><div id="greet"></div></div>
+  </div>
+  <p id="date"></p>
+  <form id="search" method="get" role="search">
+    <input id="q" type="text" aria-label="Rechercher" placeholder="Rechercher  ( / pour cibler )" autocomplete="off" autofocus>
+    <button type="submit">Go</button>
+  </form>
+
+  <section class="grid">
+    <div class="cell wide">
+      <div class="lab" id="city">Paris</div>
+      <div class="big" id="temp">--°</div>
+      <div id="desc">chargement de la météo...</div>
+      <div id="range" style="color:var(--dim)"></div>
+      <div class="hours" id="hours"></div>
+    </div>
+    <div class="cell">
+      <div class="lab">Détails</div>
+      <div class="row"><span>ressenti</span><span id="feel">--</span></div>
+      <div class="row"><span>humidité</span><span id="hum">--</span></div>
+      <div class="row"><span>vent</span><span id="wind">--</span></div>
+      <div class="row"><span>pression</span><span id="pres">--</span></div>
+      <div class="row"><span>uv max</span><span id="uv">--</span></div>
+      <div class="row"><span>risque de pluie</span><span id="rain">--</span></div>
+    </div>
+    <div class="cell">
+      <div class="lab">Soleil et air</div>
+      <div class="row"><span>lever</span><span id="rise">--</span></div>
+      <div class="row"><span>coucher</span><span id="set">--</span></div>
+      <div class="row"><span>durée du jour</span><span id="len">--</span></div>
+      <div class="row"><span>qualité de l'air</span><span id="aqi">--</span></div>
+      <div class="row"><span>lune</span><span id="moon">--</span></div>
+    </div>
+    <div class="cell">
+      <div class="lab">Ailleurs dans le monde</div>
+      <div id="world"></div>
+    </div>
+    <div class="cell">
+      <div class="lab">Le temps qui passe</div>
+      <div class="row"><span>journée</span><span id="pd">--</span></div><div class="bar"><i id="bd"></i></div>
+      <div class="row"><span>semaine</span><span id="pw">--</span></div><div class="bar"><i id="bw"></i></div>
+      <div class="row"><span>année</span><span id="py">--</span></div><div class="bar"><i id="by"></i></div>
+    </div>
+  </section>
+  <nav class="links" id="links" aria-label="Raccourcis"></nav>
+</main>
+<script>
+/* ===== A modifier ===== */
+const CFG = {
+  name: '',                       // ton prénom (laisse vide si tu veux)
+  city: 'Paris', lat: 48.8566, lon: 2.3522, tz: 'Europe/Paris',
+  engine: 'https://duckduckgo.com/', field: 'q',   // Google : https://www.google.com/search
+  world: [['New York', 'America/New_York'], ['Tokyo', 'Asia/Tokyo'], ['Dubaï', 'Asia/Dubai']],
+  links: [['GitHub', 'https://github.com'], ['YouTube', 'https://www.youtube.com'], ['Reddit', 'https://www.reddit.com'],
+          ['Gmail', 'https://mail.google.com'], ['Claude', 'https://claude.ai'], ['Maps', 'https://www.google.com/maps']]
+};
+/* ====================== */
+const $ = s => document.querySelector(s);
+const NS = 'http://www.w3.org/2000/svg';
+const pad = n => String(n).padStart(2, '0');
+const set = (id, t) => { $(id).textContent = t; };
+
+// formulaire de recherche
+$('#search').action = CFG.engine; $('#q').name = CFG.field;
+document.addEventListener('keydown', e => {
+  if (e.key === '/' && document.activeElement !== $('#q')) { e.preventDefault(); $('#q').focus(); }
+});
+
+// anneau des secondes
+const ticks = $('#ticks');
+for (let i = 0; i < 60; i++) {
+  const a = i * Math.PI / 30, r1 = i % 5 === 0 ? 172 : 180, l = document.createElementNS(NS, 'line');
+  l.setAttribute('x1', 200 + r1 * Math.sin(a)); l.setAttribute('y1', 200 - r1 * Math.cos(a));
+  l.setAttribute('x2', 200 + 192 * Math.sin(a)); l.setAttribute('y2', 200 - 192 * Math.cos(a));
+  ticks.appendChild(l);
+}
+// annees, semaines
+function isoWeek(d) {
+  const t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())), n = t.getUTCDay() || 7;
+  t.setUTCDate(t.getUTCDate() + 4 - n);
+  return Math.ceil(((t - Date.UTC(t.getUTCFullYear(), 0, 1)) / 864e5 + 1) / 7);
+}
+function moon(d) {
+  const p = (((d - Date.UTC(2000, 0, 6, 18, 14)) / 864e5) % 29.530588 + 29.530588) % 29.530588 / 29.530588;
+  const names = ['nouvelle lune', 'premier croissant', 'premier quartier', 'gibbeuse croissante', 'pleine lune', 'gibbeuse décroissante', 'dernier quartier', 'dernier croissant'];
+  return names[Math.round(p * 8) % 8] + ' (' + Math.round((1 - Math.cos(p * 2 * Math.PI)) / 2 * 100) + ' %)';
+}
+function tick() {
+  const n = new Date(), s = n.getSeconds(), h = n.getHours();
+  set('#time', pad(h) + ':' + pad(n.getMinutes())); set('#sec', pad(s));
+  [...ticks.children].forEach((l, i) => l.classList.toggle('on', i <= s));
+  const g = h < 5 ? 'bonne nuit' : h < 12 ? 'bonjour' : h < 18 ? 'bon après-midi' : 'bonsoir';
+  set('#greet', g + (CFG.name ? ', ' + CFG.name : ''));
+  set('#date', n.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) + ' · semaine ' + isoWeek(n));
+  const sod = h * 3600 + n.getMinutes() * 60 + s, dow = (n.getDay() + 6) % 7;
+  const y0 = new Date(n.getFullYear(), 0, 1), y1 = new Date(n.getFullYear() + 1, 0, 1);
+  const pr = [['d', sod / 86400], ['w', (dow * 86400 + sod) / 604800], ['y', (n - y0) / (y1 - y0)]];
+  pr.forEach(([k, v]) => { set('#p' + k, (v * 100).toFixed(1) + ' %'); $('#b' + k).style.width = v * 100 + '%'; });
+  set('#moon', moon(n));
+  const w = $('#world'); w.replaceChildren();
+  CFG.world.forEach(([name, tz]) => {
+    const r = document.createElement('div'); r.className = 'row';
+    const a = document.createElement('span'), b = document.createElement('span');
+    a.textContent = name; b.textContent = n.toLocaleTimeString('fr-FR', { timeZone: tz, hour: '2-digit', minute: '2-digit' });
+    r.append(a, b); w.appendChild(r);
+  });
+}
+tick(); setInterval(tick, 1000);
+
+// raccourcis
+CFG.links.forEach(([t, u]) => { const a = document.createElement('a'); a.textContent = t; a.href = u; $('#links').appendChild(a); });
+
+// météo (Open-Meteo, sans clé)
+function wmo(c) {
+  if (c === 0) return 'ciel dégagé'; if (c <= 2) return 'peu nuageux'; if (c === 3) return 'couvert';
+  if (c <= 48) return 'brouillard'; if (c <= 57) return 'bruine'; if (c <= 67) return 'pluie';
+  if (c <= 77) return 'neige'; if (c <= 82) return 'averses'; if (c <= 86) return 'averses de neige'; return 'orage';
+}
+function aqiLabel(v) { return v <= 20 ? 'bon' : v <= 40 ? 'correct' : v <= 60 ? 'moyen' : v <= 80 ? 'médiocre' : v <= 100 ? 'mauvais' : 'très mauvais'; }
+async function weather() {
+  try {
+    const q = `latitude=${CFG.lat}&longitude=${CFG.lon}`;
+    const wu = `https://api.open-meteo.com/v1/forecast?${q}&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m,pressure_msl&hourly=temperature_2m,precipitation_probability&daily=sunrise,sunset,temperature_2m_max,temperature_2m_min,uv_index_max,precipitation_probability_max&timezone=${encodeURIComponent(CFG.tz)}&forecast_days=2`;
+    const au = `https://air-quality-api.open-meteo.com/v1/air-quality?${q}&current=european_aqi`;
+    const [w, a] = await Promise.all([fetch(wu).then(r => r.json()), fetch(au).then(r => r.json()).catch(() => null)]);
+    const c = w.current, d = w.daily;
+    set('#city', CFG.city); set('#temp', Math.round(c.temperature_2m) + '°'); set('#desc', wmo(c.weather_code));
+    set('#range', 'min ' + Math.round(d.temperature_2m_min[0]) + '° · max ' + Math.round(d.temperature_2m_max[0]) + '°');
+    set('#feel', Math.round(c.apparent_temperature) + '°'); set('#hum', c.relative_humidity_2m + ' %');
+    set('#wind', Math.round(c.wind_speed_10m) + ' km/h'); set('#pres', Math.round(c.pressure_msl) + ' hPa');
+    set('#uv', d.uv_index_max[0].toFixed(1)); set('#rain', d.precipitation_probability_max[0] + ' %');
+    const r = d.sunrise[0], s = d.sunset[0], mins = Math.round((new Date(s) - new Date(r)) / 60000);
+    set('#rise', r.slice(11, 16)); set('#set', s.slice(11, 16)); set('#len', Math.floor(mins / 60) + ' h ' + pad(mins % 60));
+    if (a && a.current) set('#aqi', a.current.european_aqi + ' · ' + aqiLabel(a.current.european_aqi));
+    const t = w.hourly.time, i0 = Math.max(0, t.indexOf(c.time.slice(0, 13) + ':00')), box = $('#hours'); box.replaceChildren();
+    const vals = t.slice(i0, i0 + 8).map((_, k) => w.hourly.temperature_2m[i0 + k]), mn = Math.min(...vals), mx = Math.max(...vals);
+    vals.forEach((v, k) => {
+      const h = document.createElement('div'); h.className = 'h';
+      const tp = document.createElement('b'); tp.textContent = Math.round(v) + '°';
+      const bar = document.createElement('i'); bar.style.height = 14 + (v - mn) / ((mx - mn) || 1) * 44 + 'px';
+      const hr = document.createElement('span'); hr.textContent = t[i0 + k].slice(11, 13) + 'h';
+      const pp = document.createElement('div'); pp.textContent = w.hourly.precipitation_probability[i0 + k] + '%';
+      h.append(tp, bar, hr, pp); box.appendChild(h);
+    });
+  } catch (e) { set('#desc', 'météo indisponible (pas de connexion, ou aperçu qui bloque internet)'); }
+  fit();
+}
+weather(); setInterval(weather, 15 * 60 * 1000);
+
+// adapte la taille de la page à la hauteur de la fenêtre (pas de scroll)
+function fit() {
+  const m = document.querySelector('main');
+  m.style.zoom = 1;
+  const need = m.getBoundingClientRect().height + 2;
+  m.style.zoom = Math.max(0.55, Math.min(1, innerHeight / need));
+}
+fit(); addEventListener('resize', fit);
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+</script>
+</body>
+</html>

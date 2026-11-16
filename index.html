@@ -4,69 +4,106 @@
 <meta charset="utf-8">
 <title>Nouvel onglet</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@200;300;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<!-- ARCH//RELIEF — même thème que le bureau (rouge #d14848 sur #0e0e0e).
+     Ancienne version monochrome : mono.html -->
 <style>
-:root{--bg:#000;--fg:#fff;--dim:#8c8c8c;--line:#2a2a2a}
+:root{
+  --bg:#0e0e0e;--panel:#111;--fg:#e4e4e4;--dim:#5c5c5c;--mid:#8c8c8c;--line:#2a1414;
+  --red:#d14848;--red-hi:#ff6a6a;--red-mid:#8a2e2e;--red-dk:#4a1c1c;
+  --mono:'Maple Mono NF','Maple Mono','IBM Plex Mono',ui-monospace,Consolas,monospace;
+}
 *{box-sizing:border-box}
 html,body{margin:0}
-body{background:radial-gradient(circle at 50% 18%,#1b1b1b 0,#000 55%) no-repeat,#000;color:var(--fg);font:400 .95rem/1.5 'IBM Plex Mono',ui-monospace,Consolas,monospace;min-height:100vh}
-main{max-width:1000px;margin:0 auto;padding:1.6rem 1.2rem 1.6rem}
-.hero{position:relative;width:min(88vw,400px);aspect-ratio:1;margin:0 auto 1rem}
-.hero svg{position:absolute;inset:0;width:100%;height:100%}
-.halo{transform-origin:200px 200px;animation:spin 90s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-#ticks line{stroke:#fff;stroke-width:1.5;opacity:.18}
-#ticks line.on{opacity:1}
-.face{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
-#time{font:200 clamp(3rem,15vw,5.2rem)/1 'Unbounded',system-ui,sans-serif;letter-spacing:-.02em}
-#sec{font:300 1rem 'Unbounded',system-ui,sans-serif;color:var(--dim);margin-top:.6rem}
-#greet{color:var(--dim);margin-top:.9rem}
-#date{text-align:center;margin:0 0 1.8rem}
-form{display:flex;border:1px solid var(--fg);margin:0 auto 1.8rem;max-width:640px}
-form:focus-within{box-shadow:0 0 0 3px #fff3,0 0 24px #fff3}
-form input{flex:1;min-width:0;background:transparent;border:0;color:var(--fg);font:inherit;font-size:1.05rem;padding:.9rem 1rem;outline:none}
+body{background:radial-gradient(ellipse at 50% 22%,#1d0d0d 0,#0e0e0e 58%) no-repeat,var(--bg);color:var(--fg);
+  font:400 .95rem/1.5 var(--mono);min-height:100vh;overflow-x:hidden;
+  font-variant-ligatures:none;font-feature-settings:"calt" 0,"liga" 0}
+/* Maple Mono transforme != == -- en ligatures : on les coupe partout (le logo ASCII en a besoin) */
+*,*::before,*::after{font-variant-ligatures:none!important;font-feature-settings:"calt" 0,"liga" 0,"dlig" 0!important}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;
+  background:repeating-linear-gradient(0deg,#0000 0 2px,#0000002e 2px 3px)}
+::selection{background:var(--red-dk);color:#f2f2f2}
+a{color:inherit}
+
+/* HUD : coins + étiquettes, comme le fond d'écran et l'écran de verrouillage */
+.corner{position:fixed;width:34px;height:34px;border:0 solid var(--red-dk);pointer-events:none}
+.c1{top:14px;left:14px;border-top-width:1px;border-left-width:1px}
+.c2{top:14px;right:14px;border-top-width:1px;border-right-width:1px}
+.c3{bottom:14px;left:14px;border-bottom-width:1px;border-left-width:1px}
+.c4{bottom:14px;right:14px;border-bottom-width:1px;border-right-width:1px}
+.hud{position:fixed;font-size:.78rem;color:var(--dim);pointer-events:none;letter-spacing:.02em}
+.hud.tl{top:26px;left:58px}.hud.tl b{display:block;color:var(--red);font-weight:500;font-size:.95rem;letter-spacing:.06em}
+.hud.br{bottom:26px;right:58px;text-align:right}
+#state{color:var(--mid)}#state.alert{color:var(--red)}
+@media(max-width:760px){.hud,.corner{display:none}}
+
+main{max-width:1000px;margin:0 auto;padding:1.4rem 1.2rem 1.6rem}
+.hero{display:flex;align-items:center;justify-content:center;gap:2.6rem;margin:0 auto .6rem;flex-wrap:wrap}
+#logo{margin:0;font:700 12px/1.2 var(--mono);letter-spacing:0;white-space:pre;user-select:none;position:relative}
+#logo .a{color:var(--red-hi)}#logo .b{color:var(--red)}#logo .c{color:var(--red-mid)}#logo .d{color:var(--red-dk)}
+#logo .g{color:#e8e8e8;opacity:.55}
+.clock{text-align:left;min-width:15rem}
+.clock .lab{margin-bottom:.2rem}
+#time{font:300 clamp(3.2rem,11vw,5.4rem)/1 var(--mono);letter-spacing:-.03em}
+#time .sep{color:var(--red)}
+#sec{font:400 1rem var(--mono);color:var(--red);margin-top:.5rem}
+#sec i{display:inline-block;height:2px;background:var(--red);vertical-align:middle;margin-left:.6rem;width:0;transition:width .25s linear}
+#greet{color:var(--dim);margin-top:.7rem}
+#date{text-align:center;margin:.4rem 0 1.6rem;color:var(--mid)}
+#date b{color:var(--red);font-weight:400}
+
+form{display:flex;border:1px solid var(--red-dk);margin:0 auto 1.8rem;max-width:640px;background:#0e0e0ecc;transition:border-color .15s,box-shadow .15s}
+form:focus-within{border-color:var(--red);box-shadow:0 0 0 1px var(--red),0 0 28px #d1484833}
+form label{display:flex;align-items:center;padding-left:1rem;color:var(--red)}
+form input{flex:1;min-width:0;background:transparent;border:0;color:var(--fg);font:inherit;font-size:1.02rem;padding:.9rem .8rem;outline:none;caret-color:var(--red)}
 form input::placeholder{color:var(--dim)}
-form button{background:var(--fg);color:var(--bg);border:0;font:500 .95rem 'IBM Plex Mono',monospace;padding:0 1.4rem;cursor:pointer}
+form button{background:var(--red);color:#1a0808;border:0;font:500 .95rem var(--mono);padding:0 1.4rem;cursor:pointer}
+form button:hover{background:var(--red-hi)}
 form button:focus-visible{outline:2px solid var(--fg);outline-offset:-5px}
+
 .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line)}
 .cell{background:var(--bg);padding:1.1rem 1.2rem}
 .cell.wide{grid-column:span 2}
 @media(max-width:760px){.grid{grid-template-columns:1fr}.cell.wide{grid-column:auto}}
-.lab{color:var(--dim);font-size:.8rem;margin-bottom:.7rem}
-.big{font:200 3.4rem/1 'Unbounded',system-ui,sans-serif}
-.row{display:flex;justify-content:space-between;gap:1rem;padding:.18rem 0;border-bottom:1px dotted var(--line)}
+.lab{color:var(--dim);font-size:.78rem;margin-bottom:.7rem}
+.lab::before{content:"// ";color:var(--red-mid)}
+.big{font:300 3.4rem/1 var(--mono)}
+.big::after{content:"";}
+.row{display:flex;justify-content:space-between;gap:1rem;padding:.18rem 0;border-bottom:1px dotted #222}
 .row span:first-child{color:var(--dim)}
 .hours{display:flex;gap:.4rem;align-items:flex-end;margin-top:1.1rem}
-.h{flex:1;text-align:center;font-size:.78rem;color:var(--dim)}
-.h i{display:block;background:var(--fg);margin:.3rem auto;width:60%;min-width:6px}
+.h{flex:1;text-align:center;font-size:.76rem;color:var(--dim)}
+.h i{display:block;background:linear-gradient(var(--red),var(--red-dk));margin:.3rem auto;width:60%;min-width:6px}
 .h b{display:block;color:var(--fg);font-weight:500}
-.bar{height:3px;background:var(--line);margin:.3rem 0 .7rem}
-.bar i{display:block;height:100%;background:var(--fg)}
+.bar{height:3px;background:#1c1010;margin:.3rem 0 .7rem}
+.bar i{display:block;height:100%;background:var(--red)}
 .links{display:flex;flex-wrap:wrap;gap:1px;background:var(--line);border:1px solid var(--line);margin-top:1.8rem}
 .links a{flex:1 1 140px;background:var(--bg);color:var(--fg);text-decoration:none;text-align:center;padding:.9rem .6rem;transition:background .15s,color .15s}
-.links a:hover{background:var(--fg);color:var(--bg)}
-.links a:focus-visible{outline:2px solid var(--fg);outline-offset:-4px}
-@media(prefers-reduced-motion:reduce){.halo{animation:none}}
+.links a::before{content:"> ";color:var(--red-mid);transition:color .15s}
+.links a:hover{background:var(--red);color:#1a0808}
+.links a:hover::before{color:#1a0808}
+.links a:focus-visible{outline:2px solid var(--red);outline-offset:-4px}
 </style>
 </head>
 <body>
+<div class="corner c1"></div><div class="corner c2"></div><div class="corner c3"></div><div class="corner c4"></div>
+<div class="hud tl"><b>ARCH//RELIEF</b>sys.state = <span id="state">online</span></div>
+<div class="hud br"><span id="hudinfo">--</span><br>[ zen ] :: start</div>
 <main>
   <div class="hero">
-    <svg viewBox="0 0 400 400" aria-hidden="true">
-      <g class="halo" fill="none" stroke="#fff">
-        <circle cx="200" cy="200" r="150" stroke-opacity=".35" stroke-dasharray="2 9"/>
-        <circle cx="200" cy="200" r="132" stroke-opacity=".15"/>
-        <circle cx="200" cy="200" r="112" stroke-opacity=".12"/>
-        <circle cx="200" cy="200" r="96" stroke-opacity=".08"/>
-      </g>
-      <g id="ticks"></g>
-    </svg>
-    <div class="face"><div id="time">--:--</div><div id="sec">00</div><div id="greet"></div></div>
+    <pre id="logo" aria-hidden="true"></pre>
+    <div class="clock">
+      <div class="lab">local.time</div>
+      <div id="time">--:--</div>
+      <div id="sec">00<i></i></div>
+      <div id="greet"></div>
+    </div>
   </div>
   <p id="date"></p>
   <form id="search" method="get" role="search">
-    <input id="q" type="text" aria-label="Rechercher" placeholder="Rechercher  ( / pour cibler )" autocomplete="off" autofocus>
-    <button type="submit">Go</button>
+    <label for="q">&gt;</label>
+    <input id="q" type="text" aria-label="Rechercher" placeholder="rechercher  ( / pour cibler )" autocomplete="off" autofocus>
+    <button type="submit">go</button>
   </form>
 
   <section class="grid">
@@ -78,7 +115,7 @@ form button:focus-visible{outline:2px solid var(--fg);outline-offset:-5px}
       <div class="hours" id="hours"></div>
     </div>
     <div class="cell">
-      <div class="lab">Détails</div>
+      <div class="lab">détails</div>
       <div class="row"><span>ressenti</span><span id="feel">--</span></div>
       <div class="row"><span>humidité</span><span id="hum">--</span></div>
       <div class="row"><span>vent</span><span id="wind">--</span></div>
@@ -87,7 +124,7 @@ form button:focus-visible{outline:2px solid var(--fg);outline-offset:-5px}
       <div class="row"><span>risque de pluie</span><span id="rain">--</span></div>
     </div>
     <div class="cell">
-      <div class="lab">Soleil et air</div>
+      <div class="lab">soleil et air</div>
       <div class="row"><span>lever</span><span id="rise">--</span></div>
       <div class="row"><span>coucher</span><span id="set">--</span></div>
       <div class="row"><span>durée du jour</span><span id="len">--</span></div>
@@ -95,11 +132,11 @@ form button:focus-visible{outline:2px solid var(--fg);outline-offset:-5px}
       <div class="row"><span>lune</span><span id="moon">--</span></div>
     </div>
     <div class="cell">
-      <div class="lab">Ailleurs dans le monde</div>
+      <div class="lab">ailleurs dans le monde</div>
       <div id="world"></div>
     </div>
     <div class="cell">
-      <div class="lab">Le temps qui passe</div>
+      <div class="lab">le temps qui passe</div>
       <div class="row"><span>journée</span><span id="pd">--</span></div><div class="bar"><i id="bd"></i></div>
       <div class="row"><span>semaine</span><span id="pw">--</span></div><div class="bar"><i id="bw"></i></div>
       <div class="row"><span>année</span><span id="py">--</span></div><div class="bar"><i id="by"></i></div>
@@ -119,9 +156,9 @@ const CFG = {
 };
 /* ====================== */
 const $ = s => document.querySelector(s);
-const NS = 'http://www.w3.org/2000/svg';
 const pad = n => String(n).padStart(2, '0');
 const set = (id, t) => { $(id).textContent = t; };
+const STILL = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 // formulaire de recherche
 $('#search').action = CFG.engine; $('#q').name = CFG.field;
@@ -129,15 +166,55 @@ document.addEventListener('keydown', e => {
   if (e.key === '/' && document.activeElement !== $('#q')) { e.preventDefault(); $('#q').focus(); }
 });
 
-// anneau des secondes
-const ticks = $('#ticks');
-for (let i = 0; i < 60; i++) {
-  const a = i * Math.PI / 30, r1 = i % 5 === 0 ? 172 : 180, l = document.createElementNS(NS, 'line');
-  l.setAttribute('x1', 200 + r1 * Math.sin(a)); l.setAttribute('y1', 200 - r1 * Math.cos(a));
-  l.setAttribute('x2', 200 + 192 * Math.sin(a)); l.setAttribute('y2', 200 - 192 * Math.cos(a));
-  ticks.appendChild(l);
+/* ---- logo Arch en relief : normales générées par gen_startpage_logo.py (même moteur que fastfetch),
+        éclairées ici par une lumière qui fait un tour en 24 s, avec un glitch de temps en temps ---- */
+const LOGO = {"w":50,"h":25,"c":[[24,1,-0.69,-0.24,0.69],[25,1,0.68,-0.33,0.65],[23,2,-0.74,-0.3,0.6],[24,2,-0.42,-0.17,0.89],[25,2,0.43,-0.21,0.88],[26,2,0.74,-0.31,0.6],[22,3,-0.81,-0.29,0.5],[23,3,-0.47,-0.2,0.86],[24,3,-0.17,-0.06,0.98],[25,3,0.17,-0.08,0.98],[26,3,0.47,-0.2,0.86],[27,3,0.81,-0.29,0.5],[21,4,-0.83,-0.37,0.41],[22,4,-0.52,-0.25,0.82],[23,4,-0.22,-0.08,0.97],[24,4,-0.0,-0.0,1.0],[25,4,0.0,-0.0,1.0],[26,4,0.2,-0.1,0.97],[27,4,0.51,-0.21,0.83],[28,4,0.85,-0.33,0.41],[20,5,-0.89,-0.32,0.33],[21,5,-0.56,-0.25,0.79],[22,5,-0.26,-0.12,0.96],[23,5,-0.01,-0.0,1.0],[24,5,-0.0,-0.0,1.0],[25,5,-0.0,-0.0,1.0],[26,5,0.0,-0.0,1.0],[27,5,0.24,-0.12,0.96],[28,5,0.53,-0.26,0.8],[29,5,0.88,-0.31,0.36],[19,6,-0.84,-0.44,0.33],[20,6,-0.59,-0.29,0.75],[21,6,-0.3,-0.14,0.94],[22,6,-0.02,-0.01,1.0],[23,6,-0.0,-0.0,1.0],[24,6,-0.0,-0.0,1.0],[25,6,-0.0,-0.0,1.0],[26,6,-0.0,-0.0,1.0],[27,6,0.01,-0.0,1.0],[28,6,0.26,-0.13,0.96],[29,6,0.56,-0.25,0.79],[30,6,0.89,-0.32,0.33],[20,7,-0.6,0.6,0.52],[21,7,-0.43,0.44,0.79],[22,7,-0.25,0.25,0.93],[23,7,-0.07,0.09,0.99],[24,7,-0.0,0.0,1.0],[25,7,-0.0,0.0,1.0],[26,7,-0.0,-0.0,1.0],[27,7,0.0,-0.0,1.0],[28,7,0.01,-0.01,1.0],[29,7,0.28,-0.14,0.95],[30,7,0.57,-0.28,0.77],[31,7,0.84,-0.43,0.32],[18,8,-0.54,-0.34,0.77],[19,8,0.46,-0.67,0.59],[22,8,-0.6,0.7,0.39],[23,8,-0.39,0.55,0.74],[24,8,-0.26,0.36,0.9],[25,8,-0.14,0.18,0.97],[26,8,-0.02,0.02,1.0],[27,8,-0.0,0.0,1.0],[28,8,0.0,-0.0,1.0],[29,8,0.02,-0.01,1.0],[30,8,0.3,-0.15,0.94],[31,8,0.59,-0.29,0.75],[32,8,0.84,-0.44,0.33],[17,9,-0.63,-0.31,0.72],[18,9,-0.33,-0.17,0.93],[19,9,0.1,-0.17,0.98],[20,9,0.19,-0.34,0.92],[21,9,0.3,-0.47,0.83],[22,9,0.36,-0.62,0.7],[23,9,0.39,-0.8,0.45],[25,9,-0.7,0.27,0.66],[26,9,-0.4,0.06,0.92],[27,9,-0.05,0.0,1.0],[28,9,-0.0,-0.0,1.0],[29,9,0.0,-0.0,1.0],[30,9,0.02,-0.01,1.0],[31,9,0.3,-0.15,0.94],[32,9,0.59,-0.29,0.75],[33,9,0.84,-0.44,0.33],[16,10,-0.63,-0.31,0.72],[17,10,-0.33,-0.17,0.93],[18,10,-0.05,-0.02,1.0],[19,10,-0.0,-0.0,1.0],[20,10,0.0,-0.0,1.0],[21,10,0.0,-0.0,1.0],[22,10,0.03,-0.07,1.0],[23,10,0.1,-0.2,0.97],[24,10,0.07,-0.34,0.94],[25,10,-0.11,-0.3,0.95],[26,10,-0.09,-0.1,0.99],[27,10,-0.0,-0.0,1.0],[28,10,-0.0,-0.0,1.0],[29,10,-0.0,-0.0,1.0],[30,10,0.0,-0.0,1.0],[31,10,0.02,-0.01,1.0],[32,10,0.3,-0.15,0.94],[33,10,0.59,-0.29,0.75],[34,10,0.84,-0.44,0.33],[15,11,-0.61,-0.3,0.73],[16,11,-0.31,-0.16,0.94],[17,11,-0.04,-0.02,1.0],[18,11,-0.0,-0.0,1.0],[19,11,-0.0,-0.0,1.0],[20,11,-0.0,-0.0,1.0],[21,11,-0.0,-0.0,1.0],[22,11,-0.0,-0.0,1.0],[23,11,-0.0,-0.0,1.0],[24,11,-0.0,-0.0,1.0],[25,11,-0.0,-0.0,1.0],[26,11,-0.0,-0.0,1.0],[27,11,-0.0,-0.0,1.0],[28,11,-0.0,-0.0,1.0],[29,11,-0.0,-0.0,1.0],[30,11,-0.0,-0.0,1.0],[31,11,0.0,-0.0,1.0],[32,11,0.02,-0.01,1.0],[33,11,0.28,-0.14,0.95],[34,11,0.57,-0.28,0.77],[35,11,0.84,-0.43,0.32],[13,12,-0.79,-0.51,0.33],[14,12,-0.6,-0.31,0.73],[15,12,-0.31,-0.16,0.94],[16,12,-0.03,-0.02,1.0],[17,12,-0.0,-0.0,1.0],[18,12,-0.0,-0.0,1.0],[19,12,-0.0,-0.0,1.0],[20,12,-0.0,-0.0,1.0],[21,12,-0.0,-0.0,1.0],[22,12,-0.0,-0.0,1.0],[23,12,-0.0,-0.0,1.0],[24,12,-0.0,-0.0,1.0],[25,12,-0.0,-0.0,1.0],[26,12,-0.0,-0.0,1.0],[27,12,-0.0,-0.0,1.0],[28,12,-0.0,-0.0,1.0],[29,12,-0.0,-0.0,1.0],[30,12,-0.0,-0.0,1.0],[31,12,-0.0,-0.0,1.0],[32,12,0.0,-0.0,1.0],[33,12,0.01,-0.01,1.0],[34,12,0.28,-0.14,0.95],[35,12,0.57,-0.28,0.77],[36,12,0.81,-0.48,0.32],[12,13,-0.83,-0.45,0.33],[13,13,-0.59,-0.29,0.75],[14,13,-0.3,-0.15,0.94],[15,13,-0.02,-0.01,1.0],[16,13,-0.0,-0.0,1.0],[17,13,-0.0,-0.0,1.0],[18,13,-0.0,-0.0,1.0],[19,13,-0.0,-0.0,1.0],[20,13,0.0,0.0,1.0],[21,13,0.03,0.05,1.0],[22,13,0.1,0.2,0.97],[23,13,0.11,0.35,0.93],[24,13,0.0,0.41,0.91],[25,13,-0.0,0.41,0.91],[26,13,-0.11,0.35,0.93],[27,13,-0.1,0.2,0.97],[28,13,-0.03,0.05,1.0],[29,13,-0.0,0.0,1.0],[30,13,-0.0,-0.0,1.0],[31,13,-0.0,-0.0,1.0],[32,13,-0.0,-0.0,1.0],[33,13,0.0,-0.0,1.0],[34,13,0.01,-0.0,1.0],[35,13,0.26,-0.13,0.96],[36,13,0.55,-0.28,0.79],[37,13,0.84,-0.43,0.34],[11,14,-0.81,-0.48,0.32],[12,14,-0.57,-0.28,0.77],[13,14,-0.28,-0.14,0.95],[14,14,-0.01,-0.01,1.0],[15,14,-0.0,-0.0,1.0],[16,14,-0.0,-0.0,1.0],[17,14,-0.0,-0.0,1.0],[18,14,0.0,0.0,1.0],[19,14,0.07,0.05,1.0],[20,14,0.25,0.25,0.93],[21,14,0.44,0.44,0.79],[22,14,0.46,0.73,0.5],[27,14,-0.52,0.68,0.52],[28,14,-0.44,0.44,0.79],[29,14,-0.26,0.24,0.93],[30,14,-0.06,0.04,1.0],[31,14,-0.0,0.0,1.0],[32,14,-0.0,-0.0,1.0],[33,14,-0.0,-0.0,1.0],[34,14,-0.0,-0.0,1.0],[35,14,0.01,-0.0,1.0],[36,14,0.23,-0.13,0.96],[37,14,0.53,-0.27,0.8],[38,14,0.83,-0.42,0.37],[10,15,-0.78,-0.52,0.35],[11,15,-0.55,-0.28,0.79],[12,15,-0.26,-0.13,0.96],[13,15,-0.01,-0.0,1.0],[14,15,-0.0,-0.0,1.0],[15,15,-0.0,-0.0,1.0],[16,15,-0.0,-0.0,1.0],[17,15,0.0,0.0,1.0],[18,15,0.13,0.07,0.99],[19,15,0.42,0.21,0.88],[20,15,0.66,0.43,0.62],[29,15,-0.7,0.36,0.62],[30,15,-0.41,0.2,0.89],[31,15,-0.11,0.06,0.99],[32,15,-0.0,0.0,1.0],[33,15,-0.0,-0.0,1.0],[34,15,-0.0,-0.0,1.0],[35,15,-0.0,-0.0,1.0],[36,15,0.0,-0.0,1.0],[37,15,0.24,-0.12,0.96],[38,15,0.48,-0.32,0.81],[39,15,0.82,-0.41,0.41],[9,16,-0.81,-0.42,0.41],[10,16,-0.52,-0.29,0.8],[11,16,-0.24,-0.12,0.96],[12,16,-0.0,-0.0,1.0],[13,16,-0.0,-0.0,1.0],[14,16,-0.0,-0.0,1.0],[15,16,-0.0,-0.0,1.0],[16,16,0.0,-0.0,1.0],[17,16,0.06,0.02,1.0],[18,16,0.39,0.13,0.91],[19,16,0.72,0.24,0.65],[30,16,-0.72,0.24,0.65],[31,16,-0.39,0.13,0.91],[32,16,-0.06,0.02,1.0],[33,16,-0.0,-0.0,1.0],[34,16,0.0,0.0,1.0],[35,16,0.0,0.0,1.0],[36,16,0.02,0.06,1.0],[37,16,-0.01,0.08,1.0],[38,16,0.22,-0.11,0.97],[39,16,0.47,-0.3,0.83],[40,16,0.8,-0.4,0.45],[8,17,-0.8,-0.4,0.45],[9,17,-0.49,-0.25,0.83],[10,17,-0.21,-0.13,0.97],[11,17,-0.0,-0.0,1.0],[12,17,-0.0,-0.0,1.0],[13,17,-0.0,-0.0,1.0],[14,17,-0.0,-0.0,1.0],[15,17,-0.0,-0.0,1.0],[16,17,0.0,0.0,1.0],[17,17,0.2,0.04,0.98],[18,17,0.54,0.11,0.83],[19,17,0.93,0.05,0.36],[30,17,-0.91,0.22,0.36],[31,17,-0.57,0.12,0.82],[32,17,-0.22,0.03,0.98],[33,17,-0.0,0.0,1.0],[34,17,0.04,0.01,1.0],[35,17,0.36,0.11,0.92],[36,17,0.55,0.44,0.71],[37,17,-0.24,0.75,0.62],[38,17,-0.21,0.65,0.73],[39,17,-0.18,0.54,0.82],[40,17,0.37,-0.12,0.92],[41,17,0.78,-0.38,0.49],[7,18,-0.71,-0.48,0.52],[8,18,-0.48,-0.24,0.85],[9,18,-0.19,-0.09,0.98],[10,18,-0.0,-0.0,1.0],[11,18,-0.0,-0.0,1.0],[12,18,-0.0,-0.0,1.0],[13,18,-0.0,-0.0,1.0],[14,18,-0.0,-0.0,1.0],[15,18,-0.0,-0.0,1.0],[16,18,0.0,0.0,1.0],[17,18,0.27,0.0,0.96],[18,18,0.64,0.01,0.77],[31,18,-0.64,-0.0,0.77],[32,18,-0.27,-0.0,0.96],[33,18,-0.0,-0.0,1.0],[34,18,0.0,-0.0,1.0],[35,18,0.14,-0.13,0.98],[36,18,0.21,-0.37,0.9],[37,18,0.3,-0.51,0.8],[38,18,0.43,-0.66,0.62],[39,18,0.56,-0.76,0.32],[41,18,-0.35,0.87,0.34],[42,18,0.37,0.37,0.85],[6,19,-0.74,-0.37,0.57],[7,19,-0.42,-0.26,0.87],[8,19,-0.16,-0.09,0.98],[9,19,-0.0,-0.0,1.0],[10,19,-0.0,-0.0,1.0],[11,19,-0.0,-0.0,1.0],[12,19,0.0,0.0,1.0],[13,19,0.0,0.0,1.0],[14,19,0.0,0.0,1.0],[15,19,0.01,0.05,1.0],[16,19,0.04,0.14,0.99],[17,19,0.16,0.13,0.98],[18,19,0.6,-0.0,0.8],[19,19,0.95,-0.01,0.32],[31,19,-0.64,-0.04,0.77],[32,19,-0.23,0.07,0.97],[33,19,-0.04,0.13,0.99],[34,19,-0.01,0.04,1.0],[35,19,-0.0,0.0,1.0],[36,19,-0.0,0.0,1.0],[37,19,0.01,-0.01,1.0],[38,19,0.09,-0.14,0.99],[39,19,0.19,-0.3,0.93],[40,19,0.32,-0.47,0.82],[41,19,0.5,-0.59,0.63],[5,20,-0.66,-0.43,0.62],[6,20,-0.42,-0.21,0.88],[7,20,-0.13,-0.07,0.99],[8,20,-0.0,-0.0,1.0],[9,20,0.0,0.01,1.0],[10,20,0.04,0.1,0.99],[11,20,0.08,0.22,0.97],[12,20,0.15,0.34,0.93],[13,20,0.18,0.47,0.87],[14,20,0.2,0.6,0.78],[15,20,0.23,0.7,0.67],[16,20,0.27,0.8,0.53],[17,20,0.29,0.89,0.34],[32,20,-0.23,0.9,0.36],[33,20,-0.19,0.81,0.55],[34,20,-0.23,0.69,0.69],[35,20,-0.19,0.58,0.79],[36,20,-0.2,0.45,0.87],[37,20,-0.13,0.34,0.93],[38,20,-0.1,0.21,0.97],[39,20,-0.04,0.08,1.0],[40,20,0.01,-0.01,1.0],[41,20,0.13,-0.15,0.98],[42,20,0.27,-0.32,0.91],[43,20,0.42,-0.49,0.76],[44,20,0.51,-0.74,0.44],[48,20,-0.61,0.21,0.76],[4,21,-0.68,-0.34,0.65],[5,21,-0.39,-0.19,0.9],[6,21,-0.01,0.06,1.0],[7,21,0.14,0.28,0.95],[8,21,0.17,0.44,0.88],[9,21,0.28,0.55,0.79],[10,21,0.31,0.7,0.65],[11,21,0.29,0.88,0.38],[38,21,-0.33,0.85,0.41],[39,21,-0.27,0.7,0.65],[40,21,-0.22,0.56,0.8],[41,21,-0.2,0.41,0.89],[42,21,-0.13,0.26,0.96],[43,21,0.04,0.04,1.0],[44,21,0.4,-0.21,0.89],[45,21,0.66,-0.38,0.65],[3,22,-0.64,-0.33,0.69],[4,22,0.06,0.22,0.97],[5,22,0.28,0.57,0.77],[6,22,0.36,0.72,0.6],[7,22,0.43,0.84,0.32],[42,22,-0.43,0.84,0.34],[43,22,-0.35,0.7,0.62],[44,22,-0.28,0.55,0.79],[45,22,0.01,0.15,0.99],[46,22,0.66,-0.33,0.67],[2,23,0.16,0.54,0.83],[3,23,0.47,0.8,0.36],[46,23,-0.53,0.75,0.39],[47,23,0.12,0.32,0.94]]};
+const LUM = '.,-~:;=!*#%@';
+const grid = Array.from({ length: LOGO.h }, () => new Array(LOGO.w).fill(null));
+LOGO.c.forEach(([x, y, nx, ny, nz]) => { grid[y][x] = [nx, ny, nz]; });
+const esc = c => c === '&' ? '&amp;' : c === '<' ? '&lt;' : c;
+let glitch = null;                                       // {row, n, off, until}
+function drawLogo(t) {
+  const th = STILL ? -2.2 : -2.2 + t / 24000 * 2 * Math.PI;            // départ : lumière en haut à gauche
+  let lx = Math.cos(th) * 0.75, ly = Math.sin(th) * 0.75, lz = 0.9;
+  const ln = Math.hypot(lx, ly, lz); lx /= ln; ly /= ln; lz /= ln;
+  let hx = lx, hy = ly, hz = lz + 1; const hn = Math.hypot(hx, hy, hz); hx /= hn; hy /= hn; hz /= hn;
+  const g = glitch && t < glitch.until ? glitch : null;
+  let html = '';
+  for (let y = 0; y < LOGO.h; y++) {
+    const torn = g && y >= g.row && y < g.row + g.n;
+    let line = torn && g.off > 0 ? ' '.repeat(g.off) : '', cur = '';
+    const row = torn && g.off < 0 ? grid[y].slice(-g.off).concat(new Array(-g.off).fill(null)) : grid[y];
+    for (let x = 0; x < LOGO.w; x++) {
+      const n = row[x];
+      if (!n) { if (cur) { line += '</span>'; cur = ''; } line += ' '; continue; }
+      const d = Math.max(0, n[0] * lx + n[1] * ly + n[2] * lz);
+      const s = Math.pow(Math.max(0, n[0] * hx + n[1] * hy + n[2] * hz), 30);
+      const i = Math.max(0, Math.min(11, Math.floor((0.12 + 0.75 * d + 0.5 * s) * 11.5)));
+      const k = torn ? 'g' : i >= 9 ? 'a' : i >= 6 ? 'b' : i >= 3 ? 'c' : 'd';
+      if (k !== cur) { line += (cur ? '</span>' : '') + '<span class="' + k + '">'; cur = k; }
+      line += esc(LUM[i]);
+    }
+    html += line + (cur ? '</span>' : '') + '\n';
+  }
+  $('#logo').innerHTML = html;
 }
-// annees, semaines
+let last = 0, nextGlitch = performance.now() + 4000;
+function frame(t) {
+  if (t - last > 66) {                                     // ~15 images/s suffisent
+    last = t;
+    if (!STILL && t > nextGlitch) {
+      glitch = { row: 2 + Math.floor(Math.random() * (LOGO.h - 6)), n: 1 + Math.floor(Math.random() * 3),
+                 off: (Math.random() < .5 ? -1 : 1) * (2 + Math.floor(Math.random() * 4)), until: t + 120 + Math.random() * 160 };
+      nextGlitch = t + 5000 + Math.random() * 7000;
+    }
+    drawLogo(t);
+  }
+  requestAnimationFrame(frame);
+}
+drawLogo(0); if (!STILL) requestAnimationFrame(frame);
+
+// semaines, lune
 function isoWeek(d) {
   const t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate())), n = t.getUTCDay() || 7;
   t.setUTCDate(t.getUTCDate() + 4 - n);
@@ -148,13 +225,15 @@ function moon(d) {
   const names = ['nouvelle lune', 'premier croissant', 'premier quartier', 'gibbeuse croissante', 'pleine lune', 'gibbeuse décroissante', 'dernier quartier', 'dernier croissant'];
   return names[Math.round(p * 8) % 8] + ' (' + Math.round((1 - Math.cos(p * 2 * Math.PI)) / 2 * 100) + ' %)';
 }
+const t0 = Date.now();
 function tick() {
   const n = new Date(), s = n.getSeconds(), h = n.getHours();
-  set('#time', pad(h) + ':' + pad(n.getMinutes())); set('#sec', pad(s));
-  [...ticks.children].forEach((l, i) => l.classList.toggle('on', i <= s));
+  $('#time').innerHTML = pad(h) + '<span class="sep">:</span>' + pad(n.getMinutes());
+  $('#sec').firstChild.textContent = pad(s); $('#sec i').style.width = (s / 59 * 7) + 'rem';
   const g = h < 5 ? 'bonne nuit' : h < 12 ? 'bonjour' : h < 18 ? 'bon après-midi' : 'bonsoir';
   set('#greet', g + (CFG.name ? ', ' + CFG.name : ''));
-  set('#date', n.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) + ' · semaine ' + isoWeek(n));
+  const ds = n.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  $('#date').replaceChildren(ds + ' · ', Object.assign(document.createElement('b'), { textContent: 'semaine ' + isoWeek(n) }));
   const sod = h * 3600 + n.getMinutes() * 60 + s, dow = (n.getDay() + 6) % 7;
   const y0 = new Date(n.getFullYear(), 0, 1), y1 = new Date(n.getFullYear() + 1, 0, 1);
   const pr = [['d', sod / 86400], ['w', (dow * 86400 + sod) / 604800], ['y', (n - y0) / (y1 - y0)]];
@@ -167,6 +246,12 @@ function tick() {
     a.textContent = name; b.textContent = n.toLocaleTimeString('fr-FR', { timeZone: tz, hour: '2-digit', minute: '2-digit' });
     r.append(a, b); w.appendChild(r);
   });
+  // HUD : ce que le navigateur sait de la machine (pas d'accès au système depuis une page web)
+  const open = Math.floor((Date.now() - t0) / 60000);
+  const info = ['tab ' + (open < 60 ? open + 'm' : Math.floor(open / 60) + 'h' + pad(open % 60)),
+                'week ' + isoWeek(n), (navigator.onLine ? 'net up' : 'net down')];
+  set('#hudinfo', info.join('  ·  '));
+  const st = $('#state'); st.textContent = navigator.onLine ? 'online' : 'offline'; st.classList.toggle('alert', !navigator.onLine);
 }
 tick(); setInterval(tick, 1000);
 
@@ -187,7 +272,7 @@ async function weather() {
     const au = `https://air-quality-api.open-meteo.com/v1/air-quality?${q}&current=european_aqi`;
     const [w, a] = await Promise.all([fetch(wu).then(r => r.json()), fetch(au).then(r => r.json()).catch(() => null)]);
     const c = w.current, d = w.daily;
-    set('#city', CFG.city); set('#temp', Math.round(c.temperature_2m) + '°'); set('#desc', wmo(c.weather_code));
+    set('#city', CFG.city.toLowerCase()); set('#temp', Math.round(c.temperature_2m) + '°'); set('#desc', wmo(c.weather_code));
     set('#range', 'min ' + Math.round(d.temperature_2m_min[0]) + '° · max ' + Math.round(d.temperature_2m_max[0]) + '°');
     set('#feel', Math.round(c.apparent_temperature) + '°'); set('#hum', c.relative_humidity_2m + ' %');
     set('#wind', Math.round(c.wind_speed_10m) + ' km/h'); set('#pres', Math.round(c.pressure_msl) + ' hPa');
